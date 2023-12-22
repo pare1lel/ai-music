@@ -1,7 +1,7 @@
 import os
 import midi_to_list
 import player
-import mido
+import music21
 import tempfile
 import csv
 
@@ -16,7 +16,7 @@ if __name__ == '__main__':
         for file in files:
             path = os.path.join(root, file)
             try:
-                midi = mido.MidiFile(path)
+                midi = music21.converter.parse(path)
             # Process the MIDI file...
             except Exception as e:
                 print(f"An error occurred while processing {path}: {e}, skip it")
