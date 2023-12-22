@@ -28,7 +28,7 @@ if __name__ == '__main__':
             if part == None:
                 continue
             tmpfilename = tempfile.mktemp()
-            player.ConvertToMidi(tmpfilename, part, 240 * 2)
+            player.ConvertToMidi(tmpfilename, part, 240)
             player.PlayMidi(tmpfilename, False)
             print("This is {}", file)
             score : float = float(input("Score 0~1(other wise it will be discarded, -1 to quit):"))
