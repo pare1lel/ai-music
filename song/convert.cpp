@@ -25,10 +25,10 @@ int main(int argc, char** argv) {
             for(int i = 1; i <= cnt; i++)
                 a[++tot] = 0;
         } else {
-            a[++tot] = pitch + 60;
-            assert(a[tot] >= 53 && a[tot] <= 79);
-            for(int i = 1; i < cnt; i++)
-                a[++tot] = -1;
+            int newPitch = pitch + 60;
+            assert(newPitch >= 53 && newPitch <= 79);
+            for(int i = 1; i <= cnt; i++)
+                a[++tot] = newPitch;
         }   
     } 
     assert(tot == 64);
