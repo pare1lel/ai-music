@@ -29,7 +29,7 @@ def mutate(melody):
     if choose < 0.25:   # 变异
         for i in range(MELODY_LENGTH):
             if random.random() < 0.1:
-                melody[i] = random.choice([0] + list(range(MELODY_MIN, MELODY_MAX)))
+                melody[i] = random.choice([0] + list(range(MELODY_MIN, MELODY_MAX + 1)))
     elif choose < 0.5:  # 移调
         l = MELODY_MIN - min(filter(lambda x: x > 0, melody))
         r = MELODY_MAX - max(melody)
@@ -39,8 +39,10 @@ def mutate(melody):
     elif choose < 0.75: # 倒影
         for i in range(MELODY_LENGTH):
             melody[i] = MELODY_MIN + MELODY_MAX - melody[i]
-    # else:   # 逆行
-    #     melody = reverse(melody)
+    else:   # 逆行
+        for i in range(MELODY_LENGTH // 2):
+            j = MELODY_LENGTH - i - 1
+            melody[i], melody[j] = melody[j], melody[i]
     return melody,
 
 # 创建适应度类和个体类
