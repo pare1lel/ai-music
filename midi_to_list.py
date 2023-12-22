@@ -10,14 +10,18 @@ def MidiToList(stream, confineQ : bool = False) -> list:
     now = 0
     ret = []
     for note in notes:
-        if not isinstance(note, music21.note.Note): continue
-        interval = note.duration.quarterLength
-        next = now + interval
-        cnt : int = 0
-        while now + cnt * 0.25 < next:
-            ret.append(int(note.pitch.ps))
-            cnt += 1
-        now = next
+        if isinstance(note, music21.note.Note) or isinstance(note, music21.note.Rest):
+            if isinstance(note, music21.note.Note):
+                pitch = int(note.pitch.ps)
+            else:
+                pitch = 0
+            interval = note.duration.quarterLength
+            next = now + interval
+            cnt : int = 0
+            while now + cnt * 0.25 < next:
+                ret.append(pitch)
+                cnt += 1
+            now = next
     return ret
             
 
