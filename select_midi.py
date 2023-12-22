@@ -23,11 +23,12 @@ if __name__ == '__main__':
             tmpfilename = tempfile.mktemp()
             player.ConvertToMidi(tmpfilename, part)
             player.PlayMidi(tmpfilename, False)
-            score : float = input("Score 0~1:")
+            score : float = input("Score 0~1(other wise it will be discarded):")
             os.remove(tmpfilename)
             player.mixer.music.stop()
-            output_record.append(part)
-            output_score.append(score)
+            if score >= 0 and score < 1.0:
+                output_record.append(part)
+                output_score.append(score)
     
     with open('output.csv', 'w', newline='') as f:
         writer = csv.writer(f)
