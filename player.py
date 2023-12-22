@@ -1,5 +1,7 @@
 from mido import MidiFile, MidiTrack, Message, MetaMessage
 from pygame import mixer
+from itertools import groupby
+
 import time
 def ConvertToMidi(filename : str, pitches : list, BPM : int = 120) :
 
@@ -12,12 +14,13 @@ def ConvertToMidi(filename : str, pitches : list, BPM : int = 120) :
     track.append(MetaMessage('set_tempo', 60000000 / BPM))
     factor : float = 120 / float(BPM)
     
-    for pitch in pitches:
+    pitches = [(k, len(list(g))) for k, g in groupby(pitches)]
+    
+    for pair in pitches:
         vel = 96
-        if pitch == 0:
+        if pair[0] == 0:
             vel = 0
-        track.append(Message('note_on', note=pitch, velocity = vel, time= 0))
-        track.append(Message('note_off', note=pitch, velocity = vel, time = int(480 * factor)))
+        track.append(Message('note_on', note=pair[0], velocity = vel, time= int(480 * factor * pair[1])))
     # Save the MIDI file
     mid.save(filename)
     

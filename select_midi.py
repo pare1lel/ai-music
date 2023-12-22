@@ -15,9 +15,16 @@ if __name__ == '__main__':
     for root, dirs, files in os.walk(input_folder):
         for file in files:
             path = os.path.join(root, file)
-            midi = mido.MidiFile(path)
+            try:
+                midi = mido.MidiFile(path)
+            # Process the MIDI file...
+            except Exception as e:
+                print(f"An error occurred while processing {path}: {e}, skip it")
+                continue  # Skip to the next file
+            
             part = midi_to_list.MidiToList(midi)
             part = midi_to_list.ListSelect(part)
+            
             if part == None:
                 continue
             tmpfilename = tempfile.mktemp()

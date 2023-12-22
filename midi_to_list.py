@@ -1,15 +1,23 @@
 from mido import MidiFile
 from main import MELODY_MAX, MELODY_MIN
 from random import randint
+import math
 LENGTH = 64
 
-def MidiToList(midi : MidiFile) -> list:
+# if confineQ, the note out of [MELODY_MAX, MELODY_MIN] will be mute
+def MidiToList(midi : MidiFile, confineQ : bool = False) -> list:
     notes = []
-    for track in midi.tracks:
-        for msg in track:  # Assuming the main track is the first track
-            if msg.type != 'note_on' or msg.velocity <= 0:
-                continue
-            note = msg.note
+    ticks_per_beat = midi.ticks_per_beat
+    for msg in midi.tracks[0]:  # Assuming the main track is the first track
+        if msg.type != 'note_on':
+            continue
+        note = msg.note
+        if confineQ and (note > MELODY_MAX or note < MELODY_MIN):
+            note = 0
+        if msg.velocity < 10:
+            note = 0
+        period = math.ceil(msg.time / ticks_per_beat)
+        for _ in range(period):
             notes.append(note)
     return notes
 
