@@ -21,11 +21,13 @@ if __name__ == '__main__':
             if part == None:
                 continue
             tmpfilename = tempfile.mktemp()
-            player.ConvertToMidi(tmpfilename, part)
+            player.ConvertToMidi(tmpfilename, part, 240)
             player.PlayMidi(tmpfilename, False)
-            score : float = input("Score 0~1(other wise it will be discarded):")
+            print("This is {}", file)
+            score : float = float(input("Score 0~1(other wise it will be discarded, -1 to quit):"))
             os.remove(tmpfilename)
             player.mixer.music.stop()
+            if score == -1.0: break
             if score >= 0 and score < 1.0:
                 output_record.append(part)
                 output_score.append(score)

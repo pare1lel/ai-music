@@ -10,13 +10,14 @@ def ConvertToMidi(filename : str, pitches : list, BPM : int = 120) :
 
     # Add a note on and note off message for each pitch
     track.append(MetaMessage('set_tempo', 60000000 / BPM))
+    factor : float = 120 / float(BPM)
     
     for pitch in pitches:
         vel = 96
         if pitch == 0:
             vel = 0
         track.append(Message('note_on', note=pitch, velocity = vel, time= 0))
-        track.append(Message('note_off', note=pitch, velocity = vel, time = 480))
+        track.append(Message('note_off', note=pitch, velocity = vel, time = int(480 * factor)))
     # Save the MIDI file
     mid.save(filename)
     
