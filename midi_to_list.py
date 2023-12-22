@@ -7,7 +7,7 @@ LENGTH = 64
 # if confineQ, the note out of [MELODY_MAX, MELODY_MIN] will be mute
 def MidiToList(midi : MidiFile, confineQ : bool = False) -> list:
     notes = []
-    ticks_per_beat = midi.ticks_per_beat
+    ticks_per_beat = midi.ticks_per_beat / 4
     for msg in midi.tracks[0]:  # Assuming the main track is the first track
         if msg.type != 'note_on':
             continue
@@ -16,7 +16,8 @@ def MidiToList(midi : MidiFile, confineQ : bool = False) -> list:
             note = 0
         if msg.velocity < 10:
             note = 0
-        period = math.ceil(msg.time / ticks_per_beat)
+        period = round(msg.time / ticks_per_beat)
+        if (period == 0) : continue
         for _ in range(period):
             notes.append(note)
     return notes
