@@ -18,8 +18,7 @@ def evaluate(melody):
     for i in range(MELODY_LENGTH):
         if melody[i] > 0 and melody[i] != lst:
             dif = abs(melody[i] - lst)
-            if dif <= 12:
-                intervals.append(harmony[dif])
+            intervals.append(harmony[dif] if dif <= 12 else 0)
             lst = melody[i]
     return sum(intervals) / len(intervals),
 
@@ -35,10 +34,12 @@ def mutate(melody):
         r = MELODY_MAX - max(melody)
         pos = random.randint(l, r)
         for i in range(MELODY_LENGTH):
-            melody[i] = melody[i] + pos
+            if melody[i] > 0:
+                melody[i] = melody[i] + pos
     elif choose < 0.75: # 倒影
         for i in range(MELODY_LENGTH):
-            melody[i] = MELODY_MIN + MELODY_MAX - melody[i]
+            if melody[i] > 0:
+                melody[i] = MELODY_MIN + MELODY_MAX - melody[i]
     else:   # 逆行
         for i in range(MELODY_LENGTH // 2):
             j = MELODY_LENGTH - i - 1
@@ -64,7 +65,7 @@ population = toolbox.population(n=GEN_SIZE)
 
 # 运行遗传算法
 for gen in range(GEN_NUM):
-    offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
+    offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
     fits = toolbox.map(toolbox.evaluate, offspring)
     for fit, ind in zip(fits, offspring):
         ind.fitness.values = fit
