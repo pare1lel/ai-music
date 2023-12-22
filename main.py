@@ -29,6 +29,8 @@ def mutate(melody):
         for i in range(MELODY_LENGTH):
             if random.random() < 0.1:
                 melody[i] = random.choice([0] + list(range(MELODY_MIN, MELODY_MAX + 1)))
+            elif random.random() < 0.1:
+                melody[i] = melody[i - 1]
     elif choose < 0.5:  # 移调
         l = MELODY_MIN - min(filter(lambda x: x > 0, melody))
         r = MELODY_MAX - max(melody)
@@ -65,7 +67,7 @@ population = toolbox.population(n=GEN_SIZE)
 
 # 运行遗传算法
 for gen in range(GEN_NUM):
-    offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
+    offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.15)
     fits = toolbox.map(toolbox.evaluate, offspring)
     for fit, ind in zip(fits, offspring):
         ind.fitness.values = fit
