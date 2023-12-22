@@ -18,12 +18,33 @@ def evaluate(melody):
     for i in range(MELODY_LENGTH):
         if melody[i] > 0 and melody[i] != lst:
             dif = abs(melody[i] - lst)
-            if dif <= 12:
-                intervals.append(harmony[dif])
+            intervals.append(harmony[dif] if dif <= 12 else 0)
             lst = melody[i]
     return sum(intervals) / len(intervals),
 
 # 定义变异算子 - 包括移调, 倒影, 逆行
+def mutate(melody):
+    choose = random.random()
+    if choose < 0.25:   # 变异
+        for i in range(MELODY_LENGTH):
+            if random.random() < 0.1:
+                melody[i] = random.choice([0] + list(range(MELODY_MIN, MELODY_MAX + 1)))
+    elif choose < 0.5:  # 移调
+        l = MELODY_MIN - min(filter(lambda x: x > 0, melody))
+        r = MELODY_MAX - max(melody)
+        pos = random.randint(l, r)
+        for i in range(MELODY_LENGTH):
+            if melody[i] > 0:
+                melody[i] = melody[i] + pos
+    elif choose < 0.75: # 倒影
+        for i in range(MELODY_LENGTH):
+            if melody[i] > 0:
+                melody[i] = MELODY_MIN + MELODY_MAX - melody[i]
+    else:   # 逆行
+        for i in range(MELODY_LENGTH // 2):
+            j = MELODY_LENGTH - i - 1
+            melody[i], melody[j] = melody[j], melody[i]
+    return melody,
 
 # 创建适应度类和个体类
 creator.create("FitnessMax", base.Fitness, weights=(1.0,))
@@ -36,7 +57,7 @@ toolbox.register("individual", tools.initRepeat, creator.Individual, toolbox.not
 toolbox.register("population", tools.initRepeat, list, toolbox.individual)
 toolbox.register("evaluate", evaluate)
 toolbox.register("mate", tools.cxTwoPoint)
-toolbox.register("mutate", tools.mutUniformInt, low=MELODY_MIN, up=MELODY_MAX, indpb=0.1)
+toolbox.register("mutate", mutate)
 toolbox.register("select", tools.selBest)
 
 # 设置初始种群
@@ -44,7 +65,7 @@ population = toolbox.population(n=GEN_SIZE)
 
 # 运行遗传算法
 for gen in range(GEN_NUM):
-    offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.1)
+    offspring = algorithms.varAnd(population, toolbox, cxpb=0.5, mutpb=0.2)
     fits = toolbox.map(toolbox.evaluate, offspring)
     for fit, ind in zip(fits, offspring):
         ind.fitness.values = fit
