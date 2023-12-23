@@ -3,7 +3,7 @@ from pygame import mixer
 from itertools import groupby
 
 import time
-def ConvertToMidi(filename : str, pitches : list, BPM : int = 120) :
+def ConvertToMidi(filename : str, pitches : list, BPM : int = 240) :
 
     # Create a new MIDI file and a track
     mid = MidiFile()

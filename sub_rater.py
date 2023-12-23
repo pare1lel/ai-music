@@ -1,22 +1,28 @@
 import numpy as np
 
 harmony = [2, 0, 1, 1, 1, 2, 0, 2, 1, 1, 1, 0, 2]
-outsider = {54, 56, 58, 61, 63, 66, 68, 70, 73, 75, 78}
+outsider = {1, 3, 6, 8, 10}
 
 def rater_transition(melody: list) -> list:
     length = len(melody)
     res = [0.0] * 10
+    valid = 0
     for i in range(0, length - 2):
         interval1 = abs(melody[i + 1] - melody[i])
         interval2 = abs(melody[i + 2] - melody[i + 1])
-        if interval1 > 12 or interval2 > 12:
+        if melody[i] == 0 or melody[i + 1] == 0 or melody[i + 2] == 0:
+            continue
+        valid += 1
+        if interval1 > 19 or interval2 > 19:
             res[0] += 1
         else: 
-            harmony1 = harmony[interval1]
-            harmony2 = harmony[interval2]
+            harmony1 = harmony[interval1 % 12]
+            harmony2 = harmony[interval2 % 12]
             res[harmony1 * 3 + harmony2 + 1] += 1
+    if valid == 0:
+        return res
     for i in range(0, 10):
-        res[i] /= length - 2
+        res[i] /= valid
     return res
 
 def rater_stability(melody: list) -> float:
@@ -26,6 +32,8 @@ def rater_stability(melody: list) -> float:
     for i in range(0, length - 2):
         interval1 = melody[i + 1] - melody[i]
         interval2 = melody[i + 2] - melody[i + 1]
+        if melody[i] == 0 or melody[i + 1] == 0 or melody[i + 2] == 0:
+            continue
         if interval1 * interval2 < 0:
             res += abs(interval1 - interval2)
         tot += abs(interval1) + abs(interval2)
@@ -50,7 +58,7 @@ def rater_density_variation(melody: list) -> float:
         if i % 8 == 7 or i == length - 1:
             min_density = min(min_density, cnt / (i % 8 + 1))
             max_density = max(max_density, cnt / (i % 8 + 1))
-            cnt = 0
+            cnt = 0     
     return min_density / max_density
 
 def rater_syncopation(melody: list) -> float:
@@ -73,7 +81,7 @@ def rater_pitch_range(melody: list) -> float:
             continue
         min_pitch = min(min_pitch, melody[i])
         max_pitch = max(max_pitch, melody[i])
-    return (max_pitch - min_pitch) / 26
+    return (max_pitch - min_pitch) / 100
 
 def rater_max_silence(melody: list) -> float:
     length = len(melody)
@@ -90,13 +98,14 @@ def rater_max_silence(melody: list) -> float:
 def rater_unique_pitch(melody: list) -> float:
     length = len(melody)
     res = 0
-    table = [False] * 27
+    table = [False] * 120
     for i in range(0, length):
-        table[melody[i] - 53] = True
-    for i in range(0, 27):
+        table[melody[i]] = True
+    for i in range(0, 120):
         if table[i]:
             res += 1
-    return res / 27
+    return res / 120
+
 
 def rater(melody: list) -> list:
     res = rater_transition(melody)
@@ -107,12 +116,14 @@ def rater(melody: list) -> list:
     res.append(rater_pitch_range(melody))
     res.append(rater_max_silence(melody))
     res.append(rater_unique_pitch(melody))
+    res = [float(i) for i in res]
     return res
 
 def rater_outsider(melody: list) -> float:
-    length = len(melody)
-    res = 0
-    for i in range(0, length):
-        if melody[i] in outsider:
-            res += 1
+    length = res = 0
+    for i in melody:
+        if i > 0:
+            length += 1
+            if i % 12 in outsider:
+                res += 1
     return res / length
